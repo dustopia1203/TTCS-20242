@@ -51,12 +51,16 @@ userSchema.pre("save", async function (next) {
 
 // sign access token
 userSchema.methods.getSignedToken = function () {
-  return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN || " ");
+  return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN || " ", {
+    expiresIn: "5m",
+  });
 };
 
 //sign refresh token
 userSchema.methods.getRefreshToken = function () {
-  return jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN || " ");
+  return jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN || " ", {
+    expiresIn: "60m",
+  });
 };
 
 // compare password
