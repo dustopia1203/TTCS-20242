@@ -15,8 +15,8 @@ const accessTokenOptions = {
   httpOnly: true,
 };
 const refreshTokenOptions = {
-  expires: new Date(Date.now() + refreshTokenExpire * 60 * 1000),
-  maxAge: refreshTokenExpire * 60 * 1000,
+  expires: new Date(Date.now() + refreshTokenExpire * 24 * 60 * 1000),
+  maxAge: refreshTokenExpire * 24 * 60 * 1000,
   httpOnly: true,
 };
 

@@ -7,6 +7,7 @@ const {
 } = require("../utils/jwt.js");
 const jwt = require("jsonwebtoken");
 const { getUserById } = require("../services/user.service.js");
+const cloudinary = require("cloudinary").v2;
 
 const registerUser = async (req, res, next) => {
   try {
@@ -70,6 +71,7 @@ const updateAccessToken = async (req, res, next) => {
     }
     const accessToken = session.getSignedToken();
     const refreshToken = session.getRefreshToken();
+    req.user = session;
     res.cookie("accessToken", accessToken, accessTokenOptions);
     res.cookie("refreshToken", refreshToken, refreshTokenOptions);
     res.status(200).json({
@@ -90,10 +92,99 @@ const getUserInfo = async (req, res, next) => {
   }
 };
 
+const updateUserInfo = async (req, res, next) => {
+  try {
+    const { name, email } = req.body;
+    const user = await User.findById(req.user._id);
+    if (user) {
+      if (email) {
+        const isEmailTaken = await User.findOne({ email });
+        if (isEmailTaken) {
+          return next(new ErrorHandler("Email is already taken", 400));
+        }
+        user.email = email;
+      }
+      if (name) {
+        user.name = name;
+      }
+    }
+    await user.save();
+    res.json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+};
+
+const updateUserPassword = async (req, res, next) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    if (!oldPassword || !newPassword) {
+      return next(new ErrorHandler("Please enter old and new password", 400));
+    }
+    const user = await User.findById(req.user._id).select("+password");
+    const isPasswordMatched = await user.comparePassword(oldPassword);
+    if (!isPasswordMatched) {
+      return next(new ErrorHandler("Invalid password", 400));
+    }
+    user.password = newPassword;
+    await user.save();
+    res.status(201).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+};
+
+const updateUserAvatar = async (req, res, next) => {
+  try {
+    const { avatar } = req.body;
+    const user = await User.findById(req.user._id);
+    if (avatar && user) {
+      if (user.avatar.public_id) {
+        // if user already has an avatar, delete it from cloudinary
+        await cloudinary.uploader.destroy(user.avatar.public_id);
+        // then upload the new avatar
+        const imageHolder = await cloudinary.uploader.upload(avatar, {
+          folder: "avatars",
+          width: 150,
+        });
+        user.avatar = {
+          public_id: imageHolder.public_id,
+          url: imageHolder.secure_url,
+        };
+      } else {
+        const imageHolder = await cloudinary.uploader.upload(avatar, {
+          folder: "avatars",
+          width: 150,
+        });
+        user.avatar = {
+          public_id: imageHolder.public_id,
+          url: imageHolder.secure_url,
+        };
+      }
+    }
+    await user.save();
+    res.status(201).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   logoutUser,
   updateAccessToken,
   getUserInfo,
+  updateUserInfo,
+  updateUserPassword,
+  updateUserAvatar,
 };
