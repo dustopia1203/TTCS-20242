@@ -35,10 +35,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "user",
     },
-    courses: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: "Course",
-    },
+    courses: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course",
+      },
+    ],
   },
   {
     timestamps: true,
@@ -63,7 +65,7 @@ userSchema.methods.getSignedToken = function () {
 //sign refresh token
 userSchema.methods.getRefreshToken = function () {
   return jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN || " ", {
-    expiresIn: "60m",
+    expiresIn: "1d",
   });
 };
 

@@ -1,4 +1,4 @@
-const ErrorHandler = require("../utils/ErrorHandler");
+const ErrorHandler = require("../utils/errorHandler.js");
 
 function errorMiddleware(err, req, res, next) {
   err.statusCode = err.statusCode || 500;
