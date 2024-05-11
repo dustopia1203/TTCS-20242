@@ -19,6 +19,7 @@ const reviewSchema = new mongoose.Schema({
     default: 0,
   },
   comment: String,
+  commentReplies: [Object],
 });
 
 const linkSchema = new mongoose.Schema({
@@ -83,7 +84,7 @@ const courseSchema = new mongoose.Schema({
   ],
   reviews: [reviewSchema],
   courseData: [courseDataSchema],
-  ratings: {
+  rating: {
     type: Number,
     default: 0,
   },

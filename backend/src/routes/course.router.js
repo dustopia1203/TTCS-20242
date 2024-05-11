@@ -9,6 +9,8 @@ const {
   getCourseData,
   addQuestion,
   addAnswer,
+  addReview,
+  addReviewReply,
 } = require("../controllers/course.controller.js");
 
 router.post("/upload-course", authenticate, authorize("admin"), uploadCourse);
@@ -21,8 +23,12 @@ router.get("/get-courses", getCourses);
 
 router.get("/get-course-data/:id", authenticate, getCourseData);
 
-router.post("/add-question", authenticate, addQuestion);
+router.put("/add-question", authenticate, addQuestion);
 
-router.post("/add-answer", authenticate, addAnswer);
+router.put("/add-answer", authenticate, addAnswer);
+
+router.put("/add-review/:id", authenticate, addReview);
+
+router.put("/add-review-reply", authenticate, addReviewReply);
 
 module.exports = router;

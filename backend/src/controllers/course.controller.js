@@ -2,6 +2,7 @@ const ErrorHandler = require("../utils/errorHandler.js");
 const Course = require("../models/Course.js");
 const User = require("../models/User.js");
 const { createCourse } = require("../services/course.service.js");
+const { raw } = require("express");
 const cloudinary = require("cloudinary").v2;
 
 const uploadCourse = async (req, res, next) => {
@@ -176,6 +177,76 @@ const addAnswer = async (req, res, next) => {
   }
 };
 
+const addReview = async (req, res, next) => {
+  try {
+    const user = req.user;
+    const userCourseList = await User.findById(user._id)
+      .populate("courses")
+      .select("courses");
+    const courseId = req.params.id;
+    const isCourseExist = await Course.findById(courseId);
+    if (!isCourseExist) {
+      return next(new ErrorHandler("Course not found", 404));
+    }
+    const isCoursePurchased = userCourseList.courses.find(
+      (course) => course._id.toString() === courseId
+    );
+    if (!isCoursePurchased) {
+      return next(
+        new ErrorHandler("You have not permission to access this course", 401)
+      );
+    }
+    const course = await Course.findById(courseId);
+    const { rating, comment } = req.body;
+    const review = {
+      user: user._id,
+      rating,
+      comment: comment,
+    };
+    course.reviews.push(review);
+    let avg = 0;
+    course.reviews.forEach((review) => {
+      avg += review.rating;
+    });
+    course.rating = avg / course.reviews.length;
+    await course.save();
+    res.status(201).json({
+      success: true,
+      course,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+};
+
+const addReviewReply = async (req, res, next) => {
+  try {
+    const { comment, courseId, reviewId } = req.body;
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return next(new ErrorHandler("Course not found", 404));
+    }
+    const review = await course.reviews.find(
+      (item) => item._id.toString() === reviewId
+    );
+    if (!review) {
+      return next(new ErrorHandler("Review not found", 404));
+    }
+    const reply = {
+      user: req.user._id,
+      comment,
+    };
+    review.commentReplies.push(reply);
+    await course.save();
+    res.status(201).json({
+      success: true,
+      course,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+};
+
 module.exports = {
   uploadCourse,
   editCourse,
@@ -184,4 +255,6 @@ module.exports = {
   getCourseData,
   addQuestion,
   addAnswer,
+  addReview,
+  addReviewReply,
 };
