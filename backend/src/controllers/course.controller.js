@@ -1,8 +1,10 @@
 const ErrorHandler = require("../utils/errorHandler.js");
 const Course = require("../models/Course.js");
 const User = require("../models/User.js");
-const { createCourse } = require("../services/course.service.js");
-const { raw } = require("express");
+const {
+  createCourse,
+  getAllCoursesService,
+} = require("../services/course.service.js");
 const cloudinary = require("cloudinary").v2;
 
 const uploadCourse = async (req, res, next) => {
@@ -133,6 +135,11 @@ const addQuestion = async (req, res, next) => {
       commentReplies: [],
     };
     courseData.questions.push(comment);
+    await Notification.create({
+      user: req.user._id,
+      title: "New question received",
+      message: `You have a new question in ${courseData.title}`,
+    });
     await course.save();
     res.status(201).json({
       success: true,
@@ -168,6 +175,13 @@ const addAnswer = async (req, res, next) => {
     };
     question.commentReplies.push(comment);
     await course.save();
+    if (req.user._id === question.user._id) {
+      await Notification.create({
+        user: req.user._id,
+        title: "New question reply received",
+        message: `You have a new question reply in ${courseData.title}`,
+      });
+    }
     res.status(201).json({
       success: true,
       course,
@@ -247,6 +261,31 @@ const addReviewReply = async (req, res, next) => {
   }
 };
 
+const getAllCourses = async (req, res, next) => {
+  try {
+    getAllCoursesService(res);
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+};
+
+const deleteCourse = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const course = await Course.findById(id);
+    if (!course) {
+      return next(new ErrorHandler("Course not found", 404));
+    }
+    await course.deleteOne({ id });
+    res.status(200).json({
+      success: true,
+      message: "Course deleted",
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+};
+
 module.exports = {
   uploadCourse,
   editCourse,
@@ -257,4 +296,6 @@ module.exports = {
   addAnswer,
   addReview,
   addReviewReply,
+  getAllCourses,
+  deleteCourse,
 };

@@ -8,4 +8,12 @@ const createCourse = async (data, res) => {
   });
 };
 
-module.exports = { createCourse };
+const getAllCoursesService = async (res) => {
+  const courses = await Course.find().sort({ createdAt: -1 });
+  res.status(200).json({
+    success: true,
+    courses,
+  });
+};
+
+module.exports = { createCourse, getAllCoursesService };

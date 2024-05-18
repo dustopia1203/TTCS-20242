@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { authenticate, authorize } = require("../middlewares/auth.js");
+const { isAuthenticated, authorize } = require("../middlewares/auth.js");
 const {
   uploadCourse,
   editCourse,
@@ -11,24 +11,40 @@ const {
   addAnswer,
   addReview,
   addReviewReply,
+  getAllCourses,
+  deleteCourse,
 } = require("../controllers/course.controller.js");
 
-router.post("/upload-course", authenticate, authorize("admin"), uploadCourse);
+router.post(
+  "/upload-course",
+  isAuthenticated,
+  authorize("admin"),
+  uploadCourse
+);
 
-router.put("/edit-course/:id", authenticate, authorize("admin"), editCourse);
+router.put("/edit-course/:id", isAuthenticated, authorize("admin"), editCourse);
 
 router.get("/get-course/:id", getCourse);
 
 router.get("/get-courses", getCourses);
 
-router.get("/get-course-data/:id", authenticate, getCourseData);
+router.get("/get-course-data/:id", isAuthenticated, getCourseData);
 
-router.put("/add-question", authenticate, addQuestion);
+router.put("/add-question", isAuthenticated, addQuestion);
 
-router.put("/add-answer", authenticate, addAnswer);
+router.put("/add-answer", isAuthenticated, addAnswer);
 
-router.put("/add-review/:id", authenticate, addReview);
+router.put("/add-review/:id", isAuthenticated, addReview);
 
-router.put("/add-review-reply", authenticate, addReviewReply);
+router.put("/add-review-reply", isAuthenticated, addReviewReply);
+
+router.get(
+  "/get-all-courses",
+  isAuthenticated,
+  authorize("admin"),
+  getAllCourses
+);
+
+router.delete("/delete/:id", isAuthenticated, authorize("admin"), deleteCourse);
 
 module.exports = router;

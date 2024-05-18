@@ -3,7 +3,7 @@ const ErrorHandler = require("../utils/errorHandler.js");
 const User = require("../models/User.js");
 require("dotenv").config();
 
-async function authenticate(req, res, next) {
+async function isAuthenticated(req, res, next) {
   const accessToken = req.cookies.accessToken;
   const refreshToken = req.cookies.refreshToken;
   if (!accessToken && !refreshToken) {
@@ -38,4 +38,4 @@ function authorize(...roles) {
   };
 }
 
-module.exports = { authenticate, authorize };
+module.exports = { isAuthenticated, authorize };

@@ -6,7 +6,11 @@ const {
   refreshTokenOptions,
 } = require("../utils/jwt.js");
 const jwt = require("jsonwebtoken");
-const { getUserById } = require("../services/user.service.js");
+const {
+  getUserById,
+  getAllUsersService,
+  updateUserRoleService,
+} = require("../services/user.service.js");
 const cloudinary = require("cloudinary").v2;
 
 const registerUser = async (req, res, next) => {
@@ -178,6 +182,40 @@ const updateUserAvatar = async (req, res, next) => {
   }
 };
 
+const getAllUsers = async (req, res, next) => {
+  try {
+    getAllUsersService(res);
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+};
+
+const updateUserRole = async (req, res, next) => {
+  try {
+    const { id, role } = req.body;
+    updateUserRoleService(id, role, res);
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+};
+
+const deleteUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id);
+    if (!user) {
+      return next(new ErrorHandler("User not found", 404));
+    }
+    await user.deleteOne({ id });
+    res.status(200).json({
+      success: true,
+      message: "User deleted",
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -187,4 +225,7 @@ module.exports = {
   updateUserInfo,
   updateUserPassword,
   updateUserAvatar,
+  getAllUsers,
+  updateUserRole,
+  deleteUser,
 };

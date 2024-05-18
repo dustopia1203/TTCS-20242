@@ -11,4 +11,20 @@ const getUserById = async (id, res) => {
   });
 };
 
-module.exports = { getUserById };
+const getAllUsersService = async (res) => {
+  const users = await User.find().sort({ createdAt: -1 });
+  res.status(200).json({
+    success: true,
+    users,
+  });
+};
+
+const updateUserRoleService = async (id, role, res) => {
+  const user = await User.findByIdAndUpdate(id, { role }, { new: true });
+  res.status(200).json({
+    success: true,
+    user,
+  });
+};
+
+module.exports = { getUserById, getAllUsersService, updateUserRoleService };
