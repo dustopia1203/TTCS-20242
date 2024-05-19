@@ -4,6 +4,7 @@ const Course = require("../models/Course");
 const User = require("../models/User");
 const Notification = require("../models/Notification");
 const { newOrder, getAllOrdersService } = require("../services/order.service");
+const { generateLast12MonthsData } = require("../services/analytics.generator");
 
 const createOrder = async (req, res, next) => {
   try {
@@ -47,7 +48,20 @@ const getAllOrders = async (req, res, next) => {
   }
 };
 
+const getOrderAnalytics = async (req, res, next) => {
+  try {
+    const order = await generateLast12MonthsData(Order);
+    res.status(200).json({
+      success: true,
+      order,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+};
+
 module.exports = {
   createOrder,
   getAllOrders,
+  getOrderAnalytics,
 };

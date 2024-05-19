@@ -50,6 +50,11 @@
 
 - [x] Delete notification auto after a certain time with node cron
 
+#### Layout
+
+- [x] Layout model: faq, category, hero banner
+- [x] Get layout by type
+
 #### Admin
 
 - [x] Get all notifications
@@ -60,7 +65,10 @@
 - [x] Change user role
 - [x] Delete user
 - [x] Delete course
-- [ ] View stats
+- [x] Get user analytics last 28 days
+- [x] Get course analytics last 28 days
+- [x] Create layout
+- [x] Edit layout
 
 ## Frontend (Client)
 

@@ -13,6 +13,7 @@ const {
   addReviewReply,
   getAllCourses,
   deleteCourse,
+  getCourseAnalytics,
 } = require("../controllers/course.controller.js");
 
 router.post(
@@ -46,5 +47,12 @@ router.get(
 );
 
 router.delete("/delete/:id", isAuthenticated, authorize("admin"), deleteCourse);
+
+router.get(
+  "/analytics",
+  isAuthenticated,
+  authorize("admin"),
+  getCourseAnalytics
+);
 
 module.exports = router;
