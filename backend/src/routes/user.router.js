@@ -13,6 +13,7 @@ const {
   getAllUsers,
   updateUserRole,
   deleteUser,
+  getUserAnalytics,
 } = require("../controllers/user.controller");
 
 router.post("/register", registerUser);
@@ -36,5 +37,7 @@ router.get("/get-all-users", isAuthenticated, authorize("admin"), getAllUsers);
 router.put("/update-role", isAuthenticated, authorize("admin"), updateUserRole);
 
 router.delete("/delete/:id", isAuthenticated, authorize("admin"), deleteUser);
+
+router.get("/analytics", isAuthenticated, authorize("admin"), getUserAnalytics);
 
 module.exports = router;

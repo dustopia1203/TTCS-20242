@@ -5,6 +5,9 @@ const {
   createCourse,
   getAllCoursesService,
 } = require("../services/course.service.js");
+const {
+  generateLast12MonthsData,
+} = require("../services/analytics.generator.js");
 const cloudinary = require("cloudinary").v2;
 
 const uploadCourse = async (req, res, next) => {
@@ -286,6 +289,18 @@ const deleteCourse = async (req, res, next) => {
   }
 };
 
+const getCourseAnalytics = async (req, res, next) => {
+  try {
+    const course = await generateLast12MonthsData(Course);
+    res.status(200).json({
+      success: true,
+      course,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+};
+
 module.exports = {
   uploadCourse,
   editCourse,
@@ -298,4 +313,5 @@ module.exports = {
   addReviewReply,
   getAllCourses,
   deleteCourse,
+  getCourseAnalytics,
 };

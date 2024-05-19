@@ -11,6 +11,9 @@ const {
   getAllUsersService,
   updateUserRoleService,
 } = require("../services/user.service.js");
+const {
+  generateLast12MonthsData,
+} = require("../services/analytics.generator.js");
 const cloudinary = require("cloudinary").v2;
 
 const registerUser = async (req, res, next) => {
@@ -216,6 +219,18 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
+const getUserAnalytics = async (req, res, next) => {
+  try {
+    const user = await generateLast12MonthsData(User);
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -228,4 +243,5 @@ module.exports = {
   getAllUsers,
   updateUserRole,
   deleteUser,
+  getUserAnalytics,
 };
