@@ -21,6 +21,9 @@ const getAllUsersService = async (res) => {
 
 const updateUserRoleService = async (id, role, res) => {
   const user = await User.findByIdAndUpdate(id, { role }, { new: true });
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
   res.status(200).json({
     success: true,
     user,

@@ -44,7 +44,6 @@
 
 - [x] Order, notification model design
 - [x] Create order
-- [ ] Delete order
 
 #### Notification
 

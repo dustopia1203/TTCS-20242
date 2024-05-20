@@ -31,8 +31,9 @@ const courseDataSchema = new mongoose.Schema({
   videoUrl: String,
   title: String,
   videoSection: String,
+  videoThumbnail: Object,
   description: String,
-  videoLength: String,
+  videoLength: Number,
   links: [linkSchema],
   suggestion: String,
   questions: [commentSchema],
@@ -53,7 +54,7 @@ const courseSchema = new mongoose.Schema(
       default: 0,
     },
     estimatedPrice: Number,
-    thunbnail: {
+    thumbnail: {
       public_id: {
         type: String,
       },

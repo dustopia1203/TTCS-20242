@@ -9,13 +9,14 @@ const {
   generateLast12MonthsData,
 } = require("../services/analytics.generator.js");
 const cloudinary = require("cloudinary").v2;
+const Notification = require("../models/Notification.js");
 
 const uploadCourse = async (req, res, next) => {
   try {
     const data = req.body;
     // if send a course thumbnail, upload thumbnail to cloudinary
     if (data.thumbnail) {
-      const imageHolder = await cloudinary.uploader.upload(thumbnail, {
+      const imageHolder = await cloudinary.uploader.upload(data.thumbnail, {
         folder: "courses",
       });
       data.thumbnail = {
@@ -34,6 +35,7 @@ const editCourse = async (req, res, next) => {
     const data = req.body;
     // if send a course thumbnail, upload thumbnail to cloudinary
     if (data.thumbnail) {
+      await cloudinary.uploader.destroy(data.thumbnail.public_id);
       const imageHolder = await cloudinary.uploader.upload(thumbnail, {
         folder: "courses",
       });
@@ -227,6 +229,11 @@ const addReview = async (req, res, next) => {
     });
     course.rating = avg / course.reviews.length;
     await course.save();
+    await Notification.create({
+      user: req.user._id,
+      title: "New review received",
+      message: `${req.user.name} have given a new review in ${course?.name}`,
+    });
     res.status(201).json({
       success: true,
       course,
