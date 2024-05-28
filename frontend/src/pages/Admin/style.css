@@ -1,0 +1,13 @@
+.wrapper {
+  background: linear-gradient(135deg, #000066, #660066);
+}
+
+.selected {
+  background-color: white;
+  color: black;
+}
+
+.back-section:hover {
+  cursor: pointer;
+  opacity: 0.8;
+}

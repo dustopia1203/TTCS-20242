@@ -7,8 +7,8 @@ import ToastComp from "../../components/ToastComp";
 import "./style.css";
 
 function Login() {
-  const [email, setEmail] = useState("anv@gmail.com");
-  const [password, setPassword] = useState("123456");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [checked, setChecked] = useState(0);
   const [log, setLog] = useState({
     show: false,
@@ -57,6 +57,7 @@ function Login() {
       setTimeout(() => {
         setLog({ show: false, type: "", message: "", textType: "" });
       }, 1500);
+      setPassword("");
       setChecked(false);
     }
   };

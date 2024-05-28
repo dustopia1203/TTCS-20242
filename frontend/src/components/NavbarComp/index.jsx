@@ -3,16 +3,16 @@ import { LinkContainer } from "react-router-bootstrap";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../hooks/auth";
 import { useReload } from "../../hooks/reload";
-import defaultAvatar from "../../../public/assets/default-avatar.png";
+import defaultAvatar from "/assets/default-avatar.png";
 import "./style.css";
 
 const navItems = [
   { name: "Home", url: "/" },
-  // { name: "Courses", url: "/courses" },
+  { name: "Courses", url: "/courses" },
   // { name: "About Us", url: "/about-us" },
   // { name: "Policy", url: "/policy" },
-  // { name: "FAQs", url: "/faqs" },
-  // { name: "Contact Us", url: "/contact" },
+  { name: "FAQs", url: "/faqs" },
+  { name: "Contact Us", url: "/contact" },
 ];
 
 function NavbarComp() {
@@ -49,14 +49,35 @@ function NavbarComp() {
           <LinkContainer to="/">
             <Navbar.Brand>LMS</Navbar.Brand>
           </LinkContainer>
-          <LinkContainer to="/login">
-            <Button
-              variant="outline-secondary"
-              className="ms-auto d-block d-md-none"
-            >
-              Login
-            </Button>
-          </LinkContainer>
+          {isAuthenticated ? (
+            <div className="ms-auto d-block d-md-none">
+              <LinkContainer to="/profile">
+                <Image
+                  className="me-3 user-avatar"
+                  src={user?.avatar?.url || defaultAvatar}
+                  roundedCircle
+                  width="30px"
+                  height="30px"
+                />
+              </LinkContainer>
+              <Button
+                variant="outline-secondary"
+                size="sm"
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
+            </div>
+          ) : (
+            <LinkContainer to="/login">
+              <Button
+                variant="outline-secondary"
+                className="ms-auto d-block d-md-none"
+              >
+                Login
+              </Button>
+            </LinkContainer>
+          )}
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mx-auto">
@@ -72,7 +93,7 @@ function NavbarComp() {
             </Nav>
           </Navbar.Collapse>
           {isAuthenticated ? (
-            <div className="ms-auto">
+            <div className="ms-auto d-none d-md-block">
               <LinkContainer to="/profile">
                 <Image
                   className="me-3 user-avatar"

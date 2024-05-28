@@ -3,7 +3,7 @@ import { Card, Col, Container, ListGroup, Row } from "react-bootstrap";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useReload } from "../../hooks/reload";
 import * as Icon from "react-bootstrap-icons";
-import defaultAvatar from "../../../public/assets/default-avatar.png";
+import defaultAvatar from "/assets/default-avatar.png";
 import "./style.css";
 
 function Profile() {
@@ -23,7 +23,7 @@ function Profile() {
       setUser(user);
     };
     getUser();
-  }, [reload]);
+  }, [reload, user]);
 
   return (
     <div className="mb-5">
@@ -70,6 +70,18 @@ function Profile() {
                 >
                   <Icon.CardChecklist className="me-1 mb-1" /> Courses purchased
                 </ListGroup.Item>
+                {user?.role === "admin" && (
+                  <ListGroup.Item
+                    className="sidebar-item"
+                    disabled={disabled == 4}
+                    onClick={() => {
+                      setDisabled(4);
+                      navigate("/admin");
+                    }}
+                  >
+                    <Icon.PersonGear className="me-1 mb-1" /> Admin dashboard
+                  </ListGroup.Item>
+                )}
               </ListGroup>
             </Card>
           </Col>

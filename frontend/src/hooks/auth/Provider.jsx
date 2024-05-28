@@ -3,17 +3,21 @@ import Context from "./Context";
 
 function Provider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/user/refresh", {
-      method: "GET",
-      credentials: "include",
-    });
+    const refreshToken = async () => {
+      await fetch("http://localhost:8080/api/user/refresh", {
+        method: "GET",
+        credentials: "include",
+      });
+    };
+    refreshToken();
     const userLocal = JSON.parse(localStorage.getItem("user"));
     if (userLocal && isAuthenticated === false) {
       const body = { email: userLocal.email, password: userLocal.password };
       const getUser = async () => {
-        await fetch("http://localhost:8080/api/user/login", {
+        const data = await fetch("http://localhost:8080/api/user/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -21,6 +25,8 @@ function Provider({ children }) {
           body: JSON.stringify(body),
           credentials: "include",
         });
+        const response = await data.json();
+        setIsAdmin(response.user.role === "admin");
       };
       getUser();
       setIsAuthenticated(true);
@@ -32,6 +38,7 @@ function Provider({ children }) {
         });
         const response = await data.json();
         if (response.success) {
+          setIsAdmin(response.user.role === "admin");
           setIsAuthenticated(true);
         }
       };
@@ -40,7 +47,7 @@ function Provider({ children }) {
   }, [isAuthenticated]);
 
   return (
-    <Context.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+    <Context.Provider value={{ isAuthenticated, setIsAuthenticated, isAdmin }}>
       {children}
     </Context.Provider>
   );

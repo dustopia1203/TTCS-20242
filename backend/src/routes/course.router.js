@@ -14,6 +14,7 @@ const {
   getAllCourses,
   deleteCourse,
   getCourseAnalytics,
+  generateVideoUrl,
 } = require("../controllers/course.controller.js");
 
 router.post(
@@ -54,5 +55,7 @@ router.get(
   authorize("admin"),
   getCourseAnalytics
 );
+
+router.post("/generate-video-url", generateVideoUrl);
 
 module.exports = router;

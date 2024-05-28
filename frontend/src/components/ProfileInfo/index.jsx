@@ -3,7 +3,7 @@ import { Form, Button, Container, Image } from "react-bootstrap";
 import * as Icon from "react-bootstrap-icons";
 import { useReload } from "../../hooks/reload";
 import ToastComp from "../ToastComp";
-import defaultAvatar from "../../../public/assets/default-avatar.png";
+import defaultAvatar from "/assets/default-avatar.png";
 import "./style.css";
 
 function ProfileInfo() {

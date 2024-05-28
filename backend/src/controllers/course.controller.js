@@ -10,6 +10,8 @@ const {
 } = require("../services/analytics.generator.js");
 const cloudinary = require("cloudinary").v2;
 const Notification = require("../models/Notification.js");
+require("dotenv").config();
+const axios = require("axios");
 
 const uploadCourse = async (req, res, next) => {
   try {
@@ -308,6 +310,26 @@ const getCourseAnalytics = async (req, res, next) => {
   }
 };
 
+const generateVideoUrl = async (req, res, next) => {
+  try {
+    const { videoId } = req.body;
+    const response = await axios.post(
+      `https://dev.vdocipher.com/api/videos/${videoId}/otp`,
+      { ttl: 300 },
+      {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Apisecret ${process.env.VDO_API_KEY}`,
+        },
+      }
+    );
+    res.json(response.data);
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+};
+
 module.exports = {
   uploadCourse,
   editCourse,
@@ -321,4 +343,5 @@ module.exports = {
   getAllCourses,
   deleteCourse,
   getCourseAnalytics,
+  generateVideoUrl,
 };

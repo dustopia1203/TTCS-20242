@@ -1,3 +1,4 @@
 .app {
   background: linear-gradient(135deg, #000066, #660066);
+  overflow-x: hidden;
 }
